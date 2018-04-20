@@ -66,10 +66,10 @@ float GetDistanceShape(vec2 st, int N){
 
 
   // Number of sides of your shape
-  int N = 12;
+  int N = 4;
 
   // "Stretch" | lower = "Stretchier"
-  float Stretch = .15; 
+  float Stretch = .3; 
 
   // Speed
   float speed = 1;
@@ -81,7 +81,7 @@ float GetDistanceShape(vec2 st, int N){
   float BaseTexRotation = 0.0;
   
   // Scale
-  vec2 Scale = vec2(1.0, 0.75);
+  vec2 Scale = vec2(1.0, 0.6);
 
 void main()
 {
@@ -102,19 +102,18 @@ void main()
 	float fog = -1. / (diff * 10. * Scale.x) + 1.;
     
     float texY = thing2;
-    texY += timing.z * speed;
-	
-	texY = mod(texY, 0.5);
+    texY += timing.x * speed;
 
     
     float rot = (atan(point_diff.x,point_diff.y) + BaseTexRotation) / TWO_PI;
 
-    vec4 col0 = texture(mainTex, vec2(rot,texY));
-    vec4 col1 = texture(mainTex, vec2(rot,texY + 0.5));
-	col1 = col1 * (0.85 + (1 - timing.x) * 0.3);
+    vec4 col = texture(mainTex, vec2(rot,texY));
+    float hsvVal = (col.x + col.y + col.z) / 3.0;
+    vec4 clear_col = vec4(hsv2rgb(vec3(cos(rot * 10) + 0.4, 1.0, hsvVal)), col.a);
 
-	vec4 col = col0 * (1 - clearTransition) + col1 * clearTransition;
-	
+    col.xyz *= (1.0 - clearTransition);
+    col.xyz += clear_col.xyz * clearTransition * 2;
+    col.xyz *= 1.0 + (clearTransition);
     col.xyz *= vec3(fog);
     col *= col.a;
     target.xyz = col.xyz;
