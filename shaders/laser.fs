@@ -19,7 +19,8 @@ void main()
     x /= laserSize;
     x += 0.5;
 	vec4 mainColor = texture(mainTex, vec2(x,fsTex.y));
-	target = mainColor * color;
+	target = mainColor.y * color + vec4(0.6) * mainColor.x;
 	float brightness = (target.x + target.y + target.z) / 3;
 	target.xyz = target.xyz * (0.5 + objectGlow);
+	target.w = mainColor.w;
 }
